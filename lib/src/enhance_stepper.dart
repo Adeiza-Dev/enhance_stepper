@@ -388,9 +388,9 @@ class _EnhanceStepperState extends State<EnhanceStepper>
         oldState ? _oldStates[index]! : widget.steps[index].state;
     final bool isDarkActive = _isDark() && widget.steps[index].isActive;
 
-    if (widget.steps[index].icon != null && state != StepState.error) {
+    if (widget.steps[index].icon != null && state != StepState.error)
       return widget.steps[index].icon!;
-    }
+
 
     switch (state) {
       case StepState.indexed:
@@ -452,37 +452,12 @@ class _EnhanceStepperState extends State<EnhanceStepper>
     );
   }
 
-  Widget _buildTriangle(int index, bool oldState) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
-      width: (widget.stepIconSize ?? _kStepSize),
-      height: (widget.stepIconSize ?? _kStepSize),
-      child: Center(
-        child: SizedBox(
-          width: widget.stepIconSize,
-          height: _kTriangleHeight,
-          // Height of 24dp-long-sided equilateral triangle.
-          child: CustomPaint(
-            painter: _TrianglePainter(
-              color: _isDark() ? _kErrorDark : _kErrorLight,
-            ),
-            child: Align(
-              alignment: const Alignment(0.0, 0.8),
-              // 0.8 looks better than the geometrical 0.33.
-              child: _buildicon(index,
-                  oldState && widget.steps[index].state != StepState.error),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 
   Widget _buildIcon(int index) {
     if (widget.steps[index].state != _oldStates[index]) {
       return AnimatedCrossFade(
         firstChild: _buildCircle(index, true),
-        secondChild: _buildTriangle(index, true),
+        secondChild: _buildCircle(index, true),
         firstCurve: const Interval(0.0, 0.6, curve: Curves.fastOutSlowIn),
         secondCurve: const Interval(0.4, 1.0, curve: Curves.fastOutSlowIn),
         sizeCurve: Curves.fastOutSlowIn,
@@ -495,7 +470,7 @@ class _EnhanceStepperState extends State<EnhanceStepper>
       if (widget.steps[index].state != StepState.error)
         return _buildCircle(index, false);
       else
-        return _buildTriangle(index, false);
+        return _buildCircle(index, false);
     }
   }
 

@@ -147,17 +147,17 @@ class _MyHomePageState extends State<MyHomePage> {
         type: _type,
         currentStep: _index,
         physics: ClampingScrollPhysics(),
-        steps: tuples
-            .map((e) => Step(
-                  state: StepState.values[tuples.indexOf(e)],
-                  isActive: _index == tuples.indexOf(e),
-                  title: Text("step ${tuples.indexOf(e)}"),
-                  subtitle: Text(
-                    "${e.item2.toString().split(".").last}",
-                  ),
-                  content: Text("Content for Step ${tuples.indexOf(e)}"),
-                ))
-            .toList(),
+        steps: tuples.map((e) {
+          return Step(
+            state: StepState.values[tuples.indexOf(e)],
+            isActive: _index == tuples.indexOf(e),
+            title: Text("step ${tuples.indexOf(e)}"),
+            subtitle: Text(
+              "${e.item2.toString().split(".").last}",
+            ),
+            content: Text("Content for Step ${tuples.indexOf(e)}"),
+          );
+        }).toList(),
         onStepCancel: () {
           go(-1);
         },
@@ -213,7 +213,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   isActive: _index == tuples.indexOf(e),
                   title: Text("step ${tuples.indexOf(e)}"),
                   subtitle: Text(
-                    r"On completing this verification, you have access to carryout transactions up to $30,000. You would need to upgrade your account to increase the transaction limit.",
+                    r"On completing this verification, You would need to upgrade your account to increase the transaction limit.",
                     style: TextStyle(fontSize: 14),
                   ),
                   content: Text("Content for Step ${tuples.indexOf(e)}"),
