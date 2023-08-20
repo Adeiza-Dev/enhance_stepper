@@ -391,7 +391,6 @@ class _EnhanceStepperState extends State<EnhanceStepper>
     if (widget.steps[index].icon != null && state != StepState.error)
       return widget.steps[index].icon!;
 
-
     switch (state) {
       case StepState.indexed:
       case StepState.disabled:
@@ -451,7 +450,6 @@ class _EnhanceStepperState extends State<EnhanceStepper>
       ),
     );
   }
-
 
   Widget _buildIcon(int index) {
     if (widget.steps[index].state != _oldStates[index]) {
@@ -604,6 +602,7 @@ class _EnhanceStepperState extends State<EnhanceStepper>
           ? CrossAxisAlignment.center
           : CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         AnimatedDefaultTextStyle(
           style: _titleStyle(index),
@@ -630,6 +629,7 @@ class _EnhanceStepperState extends State<EnhanceStepper>
       margin: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -648,7 +648,7 @@ class _EnhanceStepperState extends State<EnhanceStepper>
           ),
           Expanded(
             child: Container(
-              margin: const EdgeInsetsDirectional.only(start: 12.0),
+              margin: const EdgeInsetsDirectional.only(start: 12.0, top: 6),
               child: _buildHeaderText(index),
             ),
           ),
