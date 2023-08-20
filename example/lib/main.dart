@@ -1,8 +1,5 @@
-import 'dart:io';
-
 import 'package:enhance_stepper/enhance_stepper.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tuple/tuple.dart';
 
@@ -53,7 +50,10 @@ class _MyHomePageState extends State<MyHomePage> {
       Icons.directions_railway,
       StepState.complete,
     ),
-    Tuple2(Icons.directions_boat, StepState.disabled, ),
+    Tuple2(
+      Icons.directions_boat,
+      StepState.disabled,
+    ),
     // Tuple2(Icons.directions_car, StepState.error, ),
   ];
 
@@ -81,7 +81,8 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
         bottom: buildPreferredSize(context),
       ),
-      body: groupValue == 0 ? buildStepper(context) : buildStepperCustom(context),
+      body:
+          groupValue == 0 ? buildStepper(context) : buildStepperCustom(context),
       // body: buildStepperCustom(context),
     );
   }
@@ -195,6 +196,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return EnhanceStepper(
         // stepIconSize: 60,
         type: _type,
+        backgroundColor: Colors.red,
         horizontalTitlePosition: HorizontalTitlePosition.bottom,
         horizontalLinePosition: HorizontalLinePosition.top,
         currentStep: _index,
@@ -211,7 +213,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   isActive: _index == tuples.indexOf(e),
                   title: Text("step ${tuples.indexOf(e)}"),
                   subtitle: Text(
-                    "${e.item2.toString().split(".").last}",
+                    r"On completing this verification, you have access to carryout transactions up to $30,000. You would need to upgrade your account to increase the transaction limit.",
+                    style: TextStyle(fontSize: 14),
                   ),
                   content: Text("Content for Step ${tuples.indexOf(e)}"),
                 ))

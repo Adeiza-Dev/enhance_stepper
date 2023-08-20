@@ -6,12 +6,7 @@
 //  Copyright © 7/2/21 shang. All rights reserved.
 //
 
-// add enum  HorizontalTitlePosition and enum  HorizontalLinePosition. circleChild replace by icon.
-
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 
 /// Defines the [Stepper]'s titles position when the type is [StepperType.horizontal].
 enum HorizontalTitlePosition {
@@ -194,33 +189,39 @@ class EnhanceStepper extends StatefulWidget {
   /// new one.
   ///
   /// The [steps], [type], and [currentStep] arguments must not be null.
-  const EnhanceStepper({
-    Key? key,
-    required this.steps,
-    this.physics,
-    this.stepIconSize = _kStepSize,
-    this.type = StepperType.vertical,
-    this.horizontalTitlePosition = HorizontalTitlePosition.inline,
-    this.horizontalLinePosition = HorizontalLinePosition.top,
-    this.currentStep = 0,
-    this.onStepTapped,
-    this.onStepContinue,
-    this.onStepCancel,
-    this.controlsBuilder,
-    this.elevation,
-    this.padding,
-    this.backgroundColor,
-  })  : assert(0 <= currentStep && currentStep < steps.length),
+  const EnhanceStepper(
+      {Key? key,
+      required this.steps,
+      this.physics,
+      this.stepIconSize = _kStepSize,
+      this.type = StepperType.vertical,
+      this.horizontalTitlePosition = HorizontalTitlePosition.inline,
+      this.horizontalLinePosition = HorizontalLinePosition.top,
+      this.currentStep = 0,
+      this.onStepTapped,
+      this.onStepContinue,
+      this.onStepCancel,
+      this.controlsBuilder,
+      this.elevation,
+      this.padding,
+      this.backgroundColor,
+      this.inActiveColor,
+      this.spaceBetweenItems = 24.0})
+      : assert(0 <= currentStep && currentStep < steps.length + 1),
         super(key: key);
 
   // Background color of stepper
   final Color? backgroundColor;
+
+  final Color? inActiveColor;
 
   // Padding of stepper content
   final EdgeInsets? padding;
 
   // The elevation of stepper
   final double? elevation;
+
+  final double? spaceBetweenItems;
 
   /// The steps of the stepper whose titles, subtitles, icons always get shown.
   ///
@@ -362,15 +363,23 @@ class _EnhanceStepperState extends State<EnhanceStepper>
     return widget.currentStep == index;
   }
 
+  bool _isBelowActive(int index) {
+    return widget.currentStep < index;
+  }
+
   bool _isDark() {
     return Theme.of(context).brightness == Brightness.dark;
   }
 
-  Widget _buildLine(bool visible) {
+  Widget _buildLine(bool isCurrent, bool visible, bool isBelowActive) {
     return Container(
       width: visible ? 1.0 : 0.0,
-      height: 16.0,
-      color: Colors.grey.shade400,
+      height: widget.spaceBetweenItems,
+      color: isCurrent
+          ? widget.inActiveColor
+          : !isBelowActive
+              ? widget.backgroundColor
+              : widget.inActiveColor,
     );
   }
 
@@ -558,7 +567,7 @@ class _EnhanceStepperState extends State<EnhanceStepper>
               child: TextButton(
                 onPressed: widget.onStepCancel,
                 style: TextButton.styleFrom(
-                  primary: cancelColor,
+                  foregroundColor: cancelColor,
                   padding: buttonPadding,
                   shape: buttonShape,
                 ),
@@ -580,13 +589,13 @@ class _EnhanceStepperState extends State<EnhanceStepper>
       case StepState.editing:
       case StepState.complete:
         // case StepState.customIcon:
-        return textTheme.bodyText1!;
+        return textTheme.bodyLarge!;
       case StepState.disabled:
-        return textTheme.bodyText1!.copyWith(
+        return textTheme.bodyLarge!.copyWith(
           color: _isDark() ? _kDisabledDark : _kDisabledLight,
         );
       case StepState.error:
-        return textTheme.bodyText1!.copyWith(
+        return textTheme.bodyLarge!.copyWith(
           color: _isDark() ? _kErrorDark : _kErrorLight,
         );
     }
@@ -601,13 +610,13 @@ class _EnhanceStepperState extends State<EnhanceStepper>
       case StepState.editing:
       case StepState.complete:
         // case StepState.customIcon:
-        return textTheme.caption!;
+        return textTheme.bodySmall!;
       case StepState.disabled:
-        return textTheme.caption!.copyWith(
+        return textTheme.bodySmall!.copyWith(
           color: _isDark() ? _kDisabledDark : _kDisabledLight,
         );
       case StepState.error:
-        return textTheme.caption!.copyWith(
+        return textTheme.bodySmall!.copyWith(
           color: _isDark() ? _kErrorDark : _kErrorLight,
         );
     }
@@ -645,14 +654,21 @@ class _EnhanceStepperState extends State<EnhanceStepper>
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           Column(
+            mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               // Line parts are always added in order for the ink splash to
               // flood the tips of the connector lines.
-              _buildLine(!_isFirst(index)),
+
               _buildIcon(index),
-              _buildLine(!_isLast(index)),
+              _buildLine(
+                  _isCurrent(index), !_isLast(index), _isBelowActive(index)),
+              _buildLine(
+                  _isCurrent(index), !_isLast(index), _isBelowActive(index)),
+              _buildLine(
+                  _isCurrent(index), !_isLast(index), _isBelowActive(index)),
             ],
           ),
           Expanded(
@@ -694,6 +710,7 @@ class _EnhanceStepperState extends State<EnhanceStepper>
               bottom: 24.0,
             ),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 widget.steps[index].content,
                 _buildVerticalControls(index),
@@ -721,23 +738,7 @@ class _EnhanceStepperState extends State<EnhanceStepper>
           Column(
             key: _keys[i],
             children: <Widget>[
-              InkWell(
-                onTap: widget.steps[i].state != StepState.disabled
-                    ? () {
-                        // In the vertical case we need to scroll to the newly tapped
-                        // step.
-                        Scrollable.ensureVisible(
-                          _keys[i].currentContext!,
-                          curve: Curves.fastOutSlowIn,
-                          duration: kThemeAnimationDuration,
-                        );
-
-                        widget.onStepTapped?.call(i);
-                      }
-                    : null,
-                canRequestFocus: widget.steps[i].state != StepState.disabled,
-                child: _buildVerticalHeader(i),
-              ),
+              _buildVerticalHeader(i),
               _buildVerticalBody(i),
             ],
           ),
@@ -767,13 +768,7 @@ class _EnhanceStepperState extends State<EnhanceStepper>
   Widget _buildHorizontal() {
     final List<Widget> children = <Widget>[
       for (int i = 0; i < widget.steps.length; i += 1) ...<Widget>[
-        InkResponse(
-          onTap: widget.steps[i].state != StepState.disabled
-              ? () {
-                  widget.onStepTapped?.call(i);
-                }
-              : null,
-          canRequestFocus: widget.steps[i].state != StepState.disabled,
+        SizedBox(
           child: widget.type == StepperType.horizontal &&
                   widget.horizontalTitlePosition ==
                       HorizontalTitlePosition.bottom
